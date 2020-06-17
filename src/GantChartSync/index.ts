@@ -1,3 +1,6 @@
+import {RedmineReferenceLogic} from "./Logic/RedmineReferenceLogic";
+import {RedmineTicket} from "./Entity/RedmineTicket";
+import {RedmineConnection} from "./Connection/RedmineConnection";
 /**
  * redmineからチケット情報を取得し、プロジェクトのタスクに記載
  * @var {string} chicketNumber チケット番号
@@ -5,14 +8,15 @@
  */
 function createTaskFromRedmine(chicketNumber:string, createAsNewSheet:boolean) {
     //ルートチケットの取得
-    let resJson = getMainChicketInfo(chicketNumber);
+    const redmineReferenceLogic = new RedmineReferenceLogic();
+    let resJson = redmineReferenceLogic.getMainChicketInfo(chicketNumber);
     //子チケットの取得
-    let childrenJson = getChildrensChicketInfo(chicketNumber);
+    let childrenJson = redmineReferenceLogic.getChildrensChicketInfo(chicketNumber);
     if (childrenJson.length < 1) {
         Browser.msgBox("子チケットがありませんでした。");
     }
     //孫チケットの取得
-    let grandchildrenJson = getGrandchildrensChicketInfoFromChildrensId(childrenJson);
+    let grandchildrenJson = redmineReferenceLogic.getGrandchildrensChicketInfoFromChildrensId(childrenJson);
     if (grandchildrenJson.length < 1) {
         Browser.msgBox("孫チケットがありませんでした。");
     }
@@ -22,15 +26,18 @@ function createTaskFromRedmine(chicketNumber:string, createAsNewSheet:boolean) {
         let sheet = SpreadsheetApp.getActiveSheet();
         if (createAsNewSheet) {
             let newSheetIndex = sheet.getIndex() + 1;
-            sheet = createNewGuntChart(chicketNumber, newSheetIndex);
+            sheet = redmineReferenceLogic.createNewGuntChart(chicketNumber);
         } else {
             sheet = SpreadsheetApp.getActiveSheet();
         }
         setTitle(sheet, resJson.issues[0]);
+        const redmineConnection = new RedmineConnection();
+        let ticket: RedmineTicket = new RedmineTicket();
         for (let i = 0; i < childrenJson.issues.length; i++) {
             currentIssue = childrenJson.issues[i];
-            redmineTicket = createRedmineChicketFromRequest(currentIssue);
-            setValueOfCellFromRequest(url, sheet, i + 11, redmineTicket);
+            ticket.createRedmineChicketFromRequest(currentIssue);
+            ticket = new RedmineTicket();
+            setValueOfCellFromRequest(redmineConnection.url, sheet, i + 11, ticket);
         }
 
     } catch(e) {
@@ -46,8 +53,9 @@ function createTaskFromRedmine(chicketNumber:string, createAsNewSheet:boolean) {
  * @param redmineChicket
  */
 function setValueOfCellFromRequest(url:string, sheet:any, rowNumber:number, redmineChicket:any) {
+    const redmineReferenceLogic = new RedmineReferenceLogic();
     var chicketUrl = url + "/issues/";
-    var hyperLink = createHyperLink(chicketUrl, redmineChicket.id);
+    var hyperLink = redmineReferenceLogic.createHyperLink(chicketUrl, redmineChicket.id);
     sheet.getRange(rowNumber, 2).setFormula(hyperLink);
     sheet.getRange(rowNumber, 3).setValue(redmineChicket.subject);
     sheet.getRange(rowNumber, 4).setValue(redmineChicket.author.name);

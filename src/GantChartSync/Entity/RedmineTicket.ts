@@ -53,4 +53,22 @@ export class RedmineTicket {
     this.updatedOn = updatedOn === undefined ? null : updatedOn;
     this.closedOn = closedOn === undefined ? null : closedOn;
   }
+
+  public createRedmineChicketFromRequest(request: any) {
+    this.id = ticketId === undefined ? null : request.ticketId;
+    this.tracker = tracker === undefined ? null : request.tracker;
+    this.status = status === undefined ? null : request.status;
+    this.priority = priority === undefined ? null : request.priority;
+    this.author = author === undefined ? null : request.author;
+    this.subject = subject === undefined ? null : request.subject;
+    this.description = description === undefined ? null : request.description;
+    this.startDate = startDate === undefined ? null : request.startDate;
+    this.dueDate = dueDate === undefined ? null : dueDate;
+    this.doneRatio = doneRatio === undefined ? null : request.doneRatio;
+    this.isPrivate = isPrivate === undefined ? null : request.isPrivate;
+    this.estimatedHours = estimatedHours === undefined ? null : request.estimatedHours;
+    this.createdOn = createdOn === undefined ? null : request.createdOn;
+    this.updatedOn = updatedOn === undefined ? null : request.updatedOn;
+    this.closedOn = closedOn === undefined ? null : request.closedOn;    
+  }
 }
