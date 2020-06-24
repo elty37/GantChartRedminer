@@ -1,3 +1,4 @@
+import {StringUtil} from "./StringUtil";
 /**
  * SpreadSheetUtil.ts
  * 2020-03-20作成
@@ -15,13 +16,13 @@ export class SpreadSheetUtil {
       targetSheetName: string = null,
       spreadSheet: any = null)
   {
-    if (!isset(spreadSheet)) {
+    if (!StringUtil.isset(spreadSheet)) {
       spreadSheet = SpreadsheetApp.getActiveSpreadsheet();
     }
-    if (!isset(targetSheetName) || targetSheetName.length < 1) {
+    if (!StringUtil.isset(targetSheetName) || targetSheetName.length < 1) {
       targetSheetName = SpreadsheetApp.getActiveSheet().getSheetName();
     }
-    if (!isset(newSheetName) || newSheetName.length < 1) {
+    if (!StringUtil.isset(newSheetName) || newSheetName.length < 1) {
       newSheetName = targetSheetName + "のコピー";
     }
     var sheetTemp = spreadSheet.getSheetByName(targetSheetName);
@@ -30,5 +31,3 @@ export class SpreadSheetUtil {
     return copiedSheet;
   }
 }
-
-

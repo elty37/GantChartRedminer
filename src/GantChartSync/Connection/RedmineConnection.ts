@@ -1,4 +1,5 @@
 import {Connection} from "./Connection";
+import {StringUtil} from "../Util/StringUtil";
 
 export class RedmineConnection extends Connection {
     /**
@@ -44,7 +45,7 @@ export class RedmineConnection extends Connection {
                 throw new Error("受信データがありませんでした。");
             }
             resJson = JSON.parse(resStr);
-            if (isset(resJson.errors)) {
+            if (StringUtil.isset(resJson.errors)) {
                 throw new Error("取得条件が不正です。");
             }
         } catch(e) {
@@ -53,4 +54,3 @@ export class RedmineConnection extends Connection {
         return resJson;
     }
 }
-

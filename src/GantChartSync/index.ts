@@ -11,7 +11,7 @@ function createTaskFromRedmine(chicketNumber:string, createAsNewSheet:boolean) {
     const redmineReferenceLogic = new RedmineReferenceLogic();
     let resJson = redmineReferenceLogic.getMainChicketInfo(chicketNumber);
     //子チケットの取得
-    let childrenJson = redmineReferenceLogic.getChildrensChicketInfo(chicketNumber);
+    let childrenJson = redmineReferenceLogic.getChildrensChicketInfo(parseInt(chicketNumber));
     if (childrenJson.length < 1) {
         Browser.msgBox("子チケットがありませんでした。");
     }
@@ -24,14 +24,15 @@ function createTaskFromRedmine(chicketNumber:string, createAsNewSheet:boolean) {
         let currentIssue = "";
         let redmineTicket = "";
         let sheet = SpreadsheetApp.getActiveSheet();
+        const redmineConnection = new RedmineConnection();
         if (createAsNewSheet) {
             let newSheetIndex = sheet.getIndex() + 1;
             sheet = redmineReferenceLogic.createNewGuntChart(chicketNumber);
         } else {
             sheet = SpreadsheetApp.getActiveSheet();
         }
-        setTitle(sheet, resJson.issues[0]);
-        const redmineConnection = new RedmineConnection();
+
+        setTitle(sheet, resJson.issues[0], redmineConnection.url);
         let ticket: RedmineTicket = new RedmineTicket();
         for (let i = 0; i < childrenJson.issues.length; i++) {
             currentIssue = childrenJson.issues[i];
@@ -48,7 +49,7 @@ function createTaskFromRedmine(chicketNumber:string, createAsNewSheet:boolean) {
 /**
  *
  * @param url
- * @param sheet
+ * @param sheetf
  * @param rowNumber
  * @param redmineChicket
  */
@@ -70,9 +71,10 @@ function setValueOfCellFromRequest(url:string, sheet:any, rowNumber:number, redm
  * @param sheet
  * @param titleTicket
  */
-function setTitle(sheet:any, titleTicket:any) {
-    let ticketUrl = getUrl() + "/issues/";
-    let hyperLink = createHyperLink(ticketUrl, titleTicket.id, titleTicket.subject);
+function setTitle(sheet:any, titleTicket:any, url:string) {
+    let ticketUrl = url + "/issues/";
+    const logic = new RedmineReferenceLogic();
+    let hyperLink = logic.createHyperLink(ticketUrl, titleTicket.id, titleTicket.subject);
     sheet.getRange(2, 2).setFormula(hyperLink);
 }
 

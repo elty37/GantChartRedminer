@@ -55,20 +55,20 @@ export class RedmineTicket {
   }
 
   public createRedmineChicketFromRequest(request: any) {
-    this.id = ticketId === undefined ? null : request.ticketId;
-    this.tracker = tracker === undefined ? null : request.tracker;
-    this.status = status === undefined ? null : request.status;
-    this.priority = priority === undefined ? null : request.priority;
-    this.author = author === undefined ? null : request.author;
-    this.subject = subject === undefined ? null : request.subject;
-    this.description = description === undefined ? null : request.description;
-    this.startDate = startDate === undefined ? null : request.startDate;
-    this.dueDate = dueDate === undefined ? null : dueDate;
-    this.doneRatio = doneRatio === undefined ? null : request.doneRatio;
-    this.isPrivate = isPrivate === undefined ? null : request.isPrivate;
-    this.estimatedHours = estimatedHours === undefined ? null : request.estimatedHours;
-    this.createdOn = createdOn === undefined ? null : request.createdOn;
-    this.updatedOn = updatedOn === undefined ? null : request.updatedOn;
-    this.closedOn = closedOn === undefined ? null : request.closedOn;    
+    this.id = request.ticketId === undefined ? null : request.ticketId;
+    this.tracker = request.tracker === undefined ? null : request.tracker;
+    this.status = request.status === undefined ? null : request.status;
+    this.priority = request.priority === undefined ? null : request.priority;
+    this.author = request.author === undefined ? null : request.author;
+    this.subject = request.subject === undefined ? null : request.subject;
+    this.description = request.description === undefined ? null : request.description;
+    this.startDate = request.startDate === undefined ? null : request.startDate;
+    this.dueDate = request.dueDate === undefined ? null : request.dueDate;
+    this.doneRatio = request.doneRatio === undefined ? null : request.doneRatio;
+    this.isPrivate = request.isPrivate === undefined ? null : request.isPrivate;
+    this.estimatedHours = request.estimatedHours === undefined ? null : request.estimatedHours;
+    this.createdOn = request.createdOn === undefined ? null : request.createdOn;
+    this.updatedOn = request.updatedOn === undefined ? null : request.updatedOn;
+    this.closedOn = request.closedOn === undefined ? null : request.closedOn;
   }
 }

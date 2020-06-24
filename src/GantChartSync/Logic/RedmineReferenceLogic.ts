@@ -1,4 +1,6 @@
 import {RedmineConnection} from "../Connection/RedmineConnection";
+import {StringUtil} from "../Util/StringUtil";
+import {SpreadSheetUtil} from "../Util/SpreadSheetUtil";
 
 export class RedmineReferenceLogic {
 
@@ -13,7 +15,7 @@ export class RedmineReferenceLogic {
     }
     //ルートチケットの取得
     let conditions = {"issue_id": ticketNumber};
-    let redmineConnection = new RedmineConnection();
+    const redmineConnection = new RedmineConnection();
     return redmineConnection.getRedmineTickets(conditions);
   }
 
@@ -22,13 +24,11 @@ export class RedmineReferenceLogic {
    *  @param Int|String parentNumber チケット番号
    *  @return Array<Object> 検索結果(JSON)
    */
-  public getChildrensChicketInfo(parentNumber) {
-    if (("" + parentNumber).length < 1) {
-      return [];
-    }
+  public getChildrensChicketInfo(parentNumber: number) {
     //ルートチケットの取得
     var conditions = {"parent_id": parentNumber};
-    return getRedmineTickets(conditions);
+    const redmineConnection = new RedmineConnection();
+    return redmineConnection.getRedmineTickets(conditions);
   }
 
   /**
@@ -36,13 +36,13 @@ export class RedmineReferenceLogic {
    *  @param  Array<Object> childrenJson 子チケット
    *  @return Array<Object> 検索結果(JSON)
    */
-  public getGrandchildrensChicketInfoFromChildrensId(childrenJson) {
+  public getGrandchildrensChicketInfoFromChildrensId(childrenJson: any) {
     if (childrenJson.issues.length < 1) {
       return [];
     }
     var res = [];
     for (var i = 0; i < childrenJson.issues.length; i++){
-      res.push(getChildrensChicketInfo(childrenJson.issues[i].parent.id));
+      res.push(this.getChildrensChicketInfo(childrenJson.issues[i].parent.id));
       Utilities.sleep(100);
     }
     return res;
@@ -56,14 +56,14 @@ export class RedmineReferenceLogic {
    *  @param String sentence リンク表示文字列(未指定の場合はチケットID)
    *  @return String 生成したハイパーリンク関数
    */
-  public createHyperLink(url, id, sentence = null) {
-    if (!isset(sentence)) {
+  public createHyperLink(url:string, id:string, sentence:string = null) {
+    if (!StringUtil.isset(sentence)) {
       sentence = id;
     }
     return '=HYPERLINK("' + url + id + '", "' + sentence + '")'
   }
 
-  public createNewGuntChart(ticketNumber) {
-    return copySheet('#' + ticketNumber,"ガントチャート");
+  public createNewGuntChart(ticketNumber:string) {
+    return SpreadSheetUtil.copySheet('#' + ticketNumber,"ガントチャート");
   }
 }

@@ -1,4 +1,5 @@
 import {SuperDao} from "./SuperDao";
+import {StringUtil} from "../Util/StringUtil";
 
 export class TicketDao extends SuperDao {
     /**
@@ -9,7 +10,7 @@ export class TicketDao extends SuperDao {
      */
     public getRedmineTickets(conditions: any) {
         // URL生成
-        let url = this.url + "/issues.json?";
+        let url = this.connection.url + "/issues.json?";
         Object.keys(conditions).forEach( function(value) {
             url = url + value + '=' + this[value] ;
         }, conditions);
@@ -33,7 +34,7 @@ export class TicketDao extends SuperDao {
                 throw new Error("受信データがありませんでした。");
             }
             resJson = JSON.parse(resStr);
-            if (isset(resJson.errors)) {
+            if (StringUtil.isset(resJson.errors)) {
                 throw new Error("取得条件が不正です。");
             }
         } catch(e) {
@@ -42,4 +43,3 @@ export class TicketDao extends SuperDao {
         return resJson;
     }
 }
-

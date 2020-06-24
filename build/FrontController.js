@@ -4,6 +4,6 @@ function onOpen(){
         .getActiveSpreadsheet()
         .addMenu(
             "開発",
-            JSON.parse('[]')); //メニューを追加
+            JSON.parse('[{"name":"redmine同期","functionName":"GantChartSync"}]')); //メニューを追加
 
 }
