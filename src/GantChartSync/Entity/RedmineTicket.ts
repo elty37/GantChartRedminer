@@ -54,8 +54,12 @@ export class RedmineTicket {
     this.closedOn = closedOn === undefined ? null : closedOn;
   }
 
+  /**
+   * リクエストから、オブジェクトを生成する
+   * @param {Object} request
+   */
   public createRedmineChicketFromRequest(request: any) {
-    this.id = request.ticketId === undefined ? null : request.ticketId;
+    this.id = request.id === undefined ? null : request.id;
     this.tracker = request.tracker === undefined ? null : request.tracker;
     this.status = request.status === undefined ? null : request.status;
     this.priority = request.priority === undefined ? null : request.priority;

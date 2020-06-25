@@ -1,10 +1,12 @@
 import {RedmineReferenceLogic} from "./Logic/RedmineReferenceLogic";
 import {RedmineTicket} from "./Entity/RedmineTicket";
 import {RedmineConnection} from "./Connection/RedmineConnection";
+
 /**
  * redmineからチケット情報を取得し、プロジェクトのタスクに記載
- * @var {string} chicketNumber チケット番号
- * @var {bool} createAsNewSheet 新しいシートとして作成する
+ *
+ * @param {string} chicketNumber
+ * @param {boolean} createAsNewSheet
  */
 function createTaskFromRedmine(chicketNumber:string, createAsNewSheet:boolean) {
     //ルートチケットの取得
@@ -37,8 +39,8 @@ function createTaskFromRedmine(chicketNumber:string, createAsNewSheet:boolean) {
         for (let i = 0; i < childrenJson.issues.length; i++) {
             currentIssue = childrenJson.issues[i];
             ticket.createRedmineChicketFromRequest(currentIssue);
-            ticket = new RedmineTicket();
             setValueOfCellFromRequest(redmineConnection.url, sheet, i + 11, ticket);
+            ticket = new RedmineTicket();
         }
 
     } catch(e) {
@@ -48,28 +50,30 @@ function createTaskFromRedmine(chicketNumber:string, createAsNewSheet:boolean) {
 
 /**
  *
- * @param url
- * @param sheetf
- * @param rowNumber
- * @param redmineChicket
+ * @param {string} url
+ * @param {Object} sheet
+ * @param {number} rowNumber
+ * @param {RedmineTicket} redmineTicket
  */
-function setValueOfCellFromRequest(url:string, sheet:any, rowNumber:number, redmineChicket:any) {
+function setValueOfCellFromRequest(url:string, sheet:any, rowNumber:number, redmineTicket:any) {
     const redmineReferenceLogic = new RedmineReferenceLogic();
     var chicketUrl = url + "/issues/";
-    var hyperLink = redmineReferenceLogic.createHyperLink(chicketUrl, redmineChicket.id);
+    var hyperLink = redmineReferenceLogic.createHyperLink(chicketUrl, redmineTicket.id);
     sheet.getRange(rowNumber, 2).setFormula(hyperLink);
-    sheet.getRange(rowNumber, 3).setValue(redmineChicket.subject);
-    sheet.getRange(rowNumber, 4).setValue(redmineChicket.author.name);
-    sheet.getRange(rowNumber, 5).setValue(redmineChicket.start_date);
-    sheet.getRange(rowNumber, 6).setValue(redmineChicket.due_date);
-    sheet.getRange(rowNumber, 7).setValue(redmineChicket.estimated_hours);
-    sheet.getRange(rowNumber, 8).setValue(redmineChicket.done_ratio * 0.01);
+    sheet.getRange(rowNumber, 3).setValue(redmineTicket.subject);
+    sheet.getRange(rowNumber, 4).setValue(redmineTicket.author.name);
+    sheet.getRange(rowNumber, 5).setValue(redmineTicket.start_date);
+    sheet.getRange(rowNumber, 6).setValue(redmineTicket.due_date);
+    sheet.getRange(rowNumber, 7).setValue(redmineTicket.estimated_hours);
+    sheet.getRange(rowNumber, 8).setValue(redmineTicket.done_ratio * 0.01);
 }
 
 /**
  * ガントチャート上のタスクごとにチケットのタイトル表示
- * @param sheet
- * @param titleTicket
+ *
+ * @param {Object} sheet
+ * @param {RedmineTicket} titleTicket
+ * @param {string} url
  */
 function setTitle(sheet:any, titleTicket:any, url:string) {
     let ticketUrl = url + "/issues/";
