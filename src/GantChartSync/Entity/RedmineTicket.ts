@@ -66,13 +66,13 @@ export class RedmineTicket {
     this.author = request.author === undefined ? null : request.author;
     this.subject = request.subject === undefined ? null : request.subject;
     this.description = request.description === undefined ? null : request.description;
-    this.startDate = request.startDate === undefined ? null : request.startDate;
-    this.dueDate = request.dueDate === undefined ? null : request.dueDate;
-    this.doneRatio = request.doneRatio === undefined ? null : request.doneRatio;
-    this.isPrivate = request.isPrivate === undefined ? null : request.isPrivate;
-    this.estimatedHours = request.estimatedHours === undefined ? null : request.estimatedHours;
-    this.createdOn = request.createdOn === undefined ? null : request.createdOn;
-    this.updatedOn = request.updatedOn === undefined ? null : request.updatedOn;
-    this.closedOn = request.closedOn === undefined ? null : request.closedOn;
+    this.startDate = request.start_date === undefined ? null : request.start_date;
+    this.dueDate = request.due_date === undefined ? null : request.due_date;
+    this.doneRatio = request.done_ratio === undefined ? null : request.done_ratio;
+    this.isPrivate = request.is_private === undefined ? null : request.is_private;
+    this.estimatedHours = request.estimated_hours === undefined ? null : request.estimated_hours;
+    this.createdOn = request.created_on === undefined ? null : request.created_on;
+    this.updatedOn = request.updated_on === undefined ? null : request.updated_on;
+    this.closedOn = request.closed_on === undefined ? null : request.closed_on;
   }
 }

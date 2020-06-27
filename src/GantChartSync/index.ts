@@ -62,10 +62,10 @@ function setValueOfCellFromRequest(url:string, sheet:any, rowNumber:number, redm
     sheet.getRange(rowNumber, 2).setFormula(hyperLink);
     sheet.getRange(rowNumber, 3).setValue(redmineTicket.subject);
     sheet.getRange(rowNumber, 4).setValue(redmineTicket.author.name);
-    sheet.getRange(rowNumber, 5).setValue(redmineTicket.start_date);
-    sheet.getRange(rowNumber, 6).setValue(redmineTicket.due_date);
-    sheet.getRange(rowNumber, 7).setValue(redmineTicket.estimated_hours);
-    sheet.getRange(rowNumber, 8).setValue(redmineTicket.done_ratio * 0.01);
+    sheet.getRange(rowNumber, 5).setValue(redmineTicket.startDate);
+    sheet.getRange(rowNumber, 6).setValue(redmineTicket.dueDate);
+    sheet.getRange(rowNumber, 7).setValue(redmineTicket.estimatedHours);
+    sheet.getRange(rowNumber, 8).setValue(redmineTicket.doneRatio * 0.01);
 }
 
 /**
