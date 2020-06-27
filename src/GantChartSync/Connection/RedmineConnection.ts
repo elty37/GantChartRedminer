@@ -44,6 +44,7 @@ export class RedmineConnection extends Connection {
             if (resStr.length === 0) {
                 throw new Error("受信データがありませんでした。");
             }
+            Logger.log("[受信成功]" + resStr);
             resJson = JSON.parse(resStr);
             if (StringUtil.isset(resJson.errors)) {
                 throw new Error("取得条件が不正です。");
