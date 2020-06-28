@@ -13,22 +13,21 @@ function createTaskFromRedmine(chicketNumber:string, createAsNewSheet:boolean) {
     const redmineReferenceLogic = new RedmineReferenceLogic();
     let resJson = redmineReferenceLogic.getMainChicketInfo(chicketNumber);
     //子チケットの取得
-    let childrenJson = redmineReferenceLogic.getChildrensChicketInfo(parseInt(chicketNumber));
+    let childrenJson = redmineReferenceLogic.getChildrenTicketInfo(parseInt(chicketNumber));
     if (childrenJson.length < 1) {
         Browser.msgBox("子チケットがありませんでした。");
     }
     //孫チケットの取得
-    let grandchildrenJson = redmineReferenceLogic.getGrandchildrensChicketInfoFromChildrensId(childrenJson);
+    let grandchildrenJson = redmineReferenceLogic.getGrandchildrenTicketInfoFromChildrenId(childrenJson);
     if (grandchildrenJson.length < 1) {
         Browser.msgBox("孫チケットがありませんでした。");
     }
     try {
-        let currentIssue = "";
-        let redmineTicket = "";
+        let currentIssue = null;
+        let currentChildrenIssues = [];
         let sheet = SpreadsheetApp.getActiveSheet();
         const redmineConnection = new RedmineConnection();
         if (createAsNewSheet) {
-            let newSheetIndex = sheet.getIndex() + 1;
             sheet = redmineReferenceLogic.createNewGuntChart(chicketNumber);
         } else {
             sheet = SpreadsheetApp.getActiveSheet();
@@ -36,11 +35,26 @@ function createTaskFromRedmine(chicketNumber:string, createAsNewSheet:boolean) {
 
         setTitle(sheet, resJson.issues[0], redmineConnection.url);
         let ticket: RedmineTicket = new RedmineTicket();
+        let currentChildTicket: RedmineTicket = new RedmineTicket();
+        let rowNumber = 11;
         for (let i = 0; i < childrenJson.issues.length; i++) {
             currentIssue = childrenJson.issues[i];
-            ticket.createRedmineChicketFromRequest(currentIssue);
-            setValueOfCellFromRequest(redmineConnection.url, sheet, i + 11, ticket);
+            currentChildrenIssues = grandchildrenJson[i].issues;
+            ticket.createRedmineTicketFromRequest(currentIssue);
+            setValueOfCellFromRequest(redmineConnection.url, sheet, rowNumber, ticket);
+            rowNumber++;
+            Logger.log("[debug]" + JSON.stringify(currentChildrenIssues));
+            for (let j = 0; j < currentChildrenIssues.length; j++) {
+              if (currentChildrenIssues[j].parent.id === ticket.id) {
+                  currentChildTicket.createRedmineTicketFromRequest(currentChildrenIssues[j]);
+                  Logger.log(JSON.stringify(currentChildTicket));
+                  setValueOfCellFromRequest(redmineConnection.url, sheet, rowNumber, currentChildTicket);
+                  rowNumber++;
+                  currentChildTicket = new RedmineTicket();
+              }
+            }
             ticket = new RedmineTicket();
+            currentChildTicket = new RedmineTicket();
         }
 
     } catch(e) {

@@ -21,28 +21,28 @@ export class RedmineReferenceLogic {
 
   /**
    * 子チケットを取得
-   *  @param Int|String parentNumber チケット番号
+   *  @param parentNumber チケット番号
    *  @return Array<Object> 検索結果(JSON)
    */
-  public getChildrensChicketInfo(parentNumber: number) {
+  public getChildrenTicketInfo(parentNumber: number) {
     //ルートチケットの取得
-    var conditions = {"parent_id": parentNumber};
+    const conditions = {"parent_id": parentNumber};
     const redmineConnection = new RedmineConnection();
     return redmineConnection.getRedmineTickets(conditions);
   }
 
   /**
    * 子チケットから孫チケットを取得
-   *  @param  Array<Object> childrenJson 子チケット
+   *  @param  childrenJson 子チケット
    *  @return Array<Object> 検索結果(JSON)
    */
-  public getGrandchildrensChicketInfoFromChildrensId(childrenJson: any) {
+  public getGrandchildrenTicketInfoFromChildrenId(childrenJson: any) {
     if (childrenJson.issues.length < 1) {
       return [];
     }
-    var res = [];
+    const res = [];
     for (var i = 0; i < childrenJson.issues.length; i++){
-      res.push(this.getChildrensChicketInfo(childrenJson.issues[i].parent.id));
+      res.push(this.getChildrenTicketInfo(childrenJson.issues[i].id));
       Utilities.sleep(100);
     }
     return res;
