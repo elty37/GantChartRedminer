@@ -87,7 +87,7 @@ function getRelativePosition(cell: Cell, dataList: any) {
 }
 
 /**
- * ルートチケット指定
+ * main
  */
 function getSheetInfo() {
     const fromCol = readCol(new Cell(0,1, PositionType.RELATIVE, "from"));

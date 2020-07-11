@@ -1,4 +1,5 @@
 import {StringUtil} from "./StringUtil";
+import Spreadsheet = GoogleAppsScript.Spreadsheet.Spreadsheet;
 /**
  * SpreadSheetUtil.ts
  * 2020-03-20作成
@@ -8,25 +9,22 @@ export class SpreadSheetUtil {
    * シートをコピー
    * @param {String} newSheetName コピーしたシートの名前　名前がないときは「元のシート名のコピー」に
    * @param {String} targetSheetName コピーするシートの名前　名前がないときは現在選択されているシート名
-   * @param {SpreadSheet} spreadSheet 対象スプレッドシート 指定がない場合は現在のスプレッドシート
+   * @param {GoogleAppsScript.Spreadsheet.Spreadsheet} spreadSheet 対象スプレッドシート 指定がない場合は現在のスプレッドシート
    * @return {Sheet} コピーしたシート
    */
   static copySheet(
       newSheetName: string = null,
       targetSheetName: string = null,
-      spreadSheet: any = null)
+      spreadSheet: Spreadsheet = null)
   {
-    if (!StringUtil.isset(spreadSheet)) {
-      spreadSheet = SpreadsheetApp.getActiveSpreadsheet();
-    }
-    if (!StringUtil.isset(targetSheetName) || targetSheetName.length < 1) {
-      targetSheetName = SpreadsheetApp.getActiveSheet().getSheetName();
-    }
-    if (!StringUtil.isset(newSheetName) || newSheetName.length < 1) {
+    if (!StringUtil.isset(newSheetName)) {
       newSheetName = targetSheetName + "のコピー";
     }
-    var sheetTemp = spreadSheet.getSheetByName(targetSheetName);
-    var copiedSheet = sheetTemp.copyTo(spreadSheet);
+    if (!StringUtil.isset(targetSheetName)) {
+      targetSheetName = SpreadsheetApp.getActiveSheet().getSheetName();
+    }
+    const sheetTemp = spreadSheet.getSheetByName(targetSheetName);
+    const copiedSheet = sheetTemp.copyTo(spreadSheet);
     copiedSheet.setName(newSheetName);
     return copiedSheet;
   }

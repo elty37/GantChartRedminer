@@ -1,6 +1,8 @@
 import {RedmineReferenceLogic} from "./Logic/RedmineReferenceLogic";
 import {RedmineTicket} from "./Entity/RedmineTicket";
 import {RedmineConnection} from "./Connection/RedmineConnection";
+import Sheet = GoogleAppsScript.Spreadsheet.Sheet;
+import {RangeUtil} from "./Util/RangeUtil";
 
 /**
  * redmineからチケット情報を取得し、プロジェクトのタスクに記載
@@ -11,7 +13,7 @@ import {RedmineConnection} from "./Connection/RedmineConnection";
 function createTaskFromRedmine(chicketNumber:string, createAsNewSheet:boolean) {
     //ルートチケットの取得
     const redmineReferenceLogic = new RedmineReferenceLogic();
-    let resJson = redmineReferenceLogic.getMainChicketInfo(chicketNumber);
+    let resJson = redmineReferenceLogic.getMainTicketInfo(parseInt(chicketNumber));
     //子チケットの取得
     let childrenJson = redmineReferenceLogic.getChildrenTicketInfo(parseInt(chicketNumber));
     if (childrenJson.length < 1) {
@@ -41,6 +43,7 @@ function createTaskFromRedmine(chicketNumber:string, createAsNewSheet:boolean) {
             currentIssue = childrenJson.issues[i];
             currentChildrenIssues = grandchildrenJson[i].issues;
             ticket.createRedmineTicketFromRequest(currentIssue);
+            setChildStyle(sheet,rowNumber);
             setValueOfCellFromRequest(redmineConnection.url, sheet, rowNumber, ticket);
             rowNumber++;
             Logger.log("[debug]" + JSON.stringify(currentChildrenIssues));
@@ -83,6 +86,18 @@ function setValueOfCellFromRequest(url:string, sheet:any, rowNumber:number, redm
 }
 
 /**
+ * 中タスクのスタイルをセルに適応
+ * @param sheet
+ * @param rowNumber
+ */
+function setChildStyle(sheet: Sheet, rowNumber: number) {
+    const rangeStart="B";
+    const rangeEnd="BP";
+    const range = sheet.getRange(rangeStart + rowNumber.toString() + ":" + rangeEnd + rowNumber.toString());
+    RangeUtil.setColor(range, "#AAAAAA");
+}
+
+/**
  * ガントチャート上のタスクごとにチケットのタイトル表示
  *
  * @param {Object} sheet
@@ -99,7 +114,7 @@ function setTitle(sheet:any, titleTicket:any, url:string) {
 /**
  * ルートチケット指定
  */
-function getRootChicket() {
+function getRootTicket() {
     //入力するメッセージボックス
     var chicketNumber = Browser.inputBox("ルートチケット番号の入力", "表示したいチケット番号を入力してください。", Browser.Buttons.OK_CANCEL);
     if (chicketNumber != "cancel"){
@@ -107,4 +122,4 @@ function getRootChicket() {
     }
 }
 
-getRootChicket();
+getRootTicket();

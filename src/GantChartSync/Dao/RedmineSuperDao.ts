@@ -11,7 +11,7 @@ export class RedmineSuperDao implements SuperDaoInterface{
     public connection: RedmineConnection;
 
     constructor(connection?: RedmineConnection) {
-        this.connection = connection === undefined ? null : connection;
+        this.connection = connection === undefined ? new RedmineConnection() : connection;
     }
 }
 
