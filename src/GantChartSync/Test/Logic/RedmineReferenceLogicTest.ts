@@ -1,4 +1,5 @@
 import { RedmineReferenceLogic } from '../../Logic/RedmineReferenceLogic';
+import {Messages} from "../../Config/lang/ja";
 
 describe('StringUtilのテスト', () => {
     it('createHyperLink正常系(sentenceあり)', () => {
@@ -22,15 +23,18 @@ describe('StringUtilのテスト', () => {
         const redmineReferenceLogic = new RedmineReferenceLogic()
         let url:string = null;
         let id = "120";
-        expect(() => {redmineReferenceLogic.createHyperLink(url, id)}).toThrowError("url is empty!");
+        expect(() => {
+            redmineReferenceLogic.createHyperLink(url, id)
+        }).toThrowError(Messages.util_error_url_is_empty);
     })
 
     it('createHyperLink異常系(id is null)', () => {
         const redmineReferenceLogic = new RedmineReferenceLogic()
         let url = 'https://www.google.com/?hl=ja';
-        let id = null;
-        const response = redmineReferenceLogic.createHyperLink(url, id);
-        expect(response).toBe("");
+        let id:string = null;
+        expect(() => {
+            redmineReferenceLogic.createHyperLink(url, id)
+        }).toThrowError(Messages.util_error_id_is_empty);
     })
 
 });

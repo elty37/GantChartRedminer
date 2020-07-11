@@ -2,8 +2,10 @@ import {RedmineConnection} from "../Connection/RedmineConnection";
 import {StringUtil} from "../Util/StringUtil";
 import {SpreadSheetUtil} from "../Util/SpreadSheetUtil";
 import {TicketDao} from "../Dao/TicketDao";
+import {SuperLogic} from "./SuperLogic";
+import {Messages} from "../Config/lang/ja";
 
-export class RedmineReferenceLogic {
+export class RedmineReferenceLogic extends SuperLogic {
 
   /**
    * メインチケット（フォームから入力したチケット）を取得
@@ -54,10 +56,10 @@ export class RedmineReferenceLogic {
    */
   public createHyperLink(url:string, id:string, sentence:string = null) {
     if (!StringUtil.isset(url)) {
-      throw new Error("url is empty!");
+      throw new Error(Messages.util_error_url_is_empty);
     }
     if (!StringUtil.isset(id)) {
-      throw new Error("id is empty!");
+      throw new Error(Messages.util_error_id_is_empty);
     }
     if (!StringUtil.isset(sentence)) {
       sentence = id;
