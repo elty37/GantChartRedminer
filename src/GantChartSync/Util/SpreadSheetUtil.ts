@@ -15,14 +15,21 @@ export class SpreadSheetUtil {
   static copySheet(
       newSheetName: string = null,
       targetSheetName: string = null,
-      spreadSheet: Spreadsheet = null)
+      spreadSheet: Spreadsheet = null
+  )
   {
     if (!StringUtil.isset(newSheetName)) {
       newSheetName = targetSheetName + "のコピー";
     }
+
     if (!StringUtil.isset(targetSheetName)) {
       targetSheetName = SpreadsheetApp.getActiveSheet().getSheetName();
     }
+
+    if (!spreadSheet) {
+      spreadSheet = SpreadsheetApp.getActiveSpreadsheet();
+    }
+
     const sheetTemp = spreadSheet.getSheetByName(targetSheetName);
     const copiedSheet = sheetTemp.copyTo(spreadSheet);
     copiedSheet.setName(newSheetName);
