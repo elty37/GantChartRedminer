@@ -67,6 +67,12 @@ export class RedmineReferenceLogic extends SuperLogic {
     return '=HYPERLINK("' + url + id + '", "' + sentence + '")'
   }
 
+  /**
+   * シート名がチケット番号表記のシートを作成する。
+   * 雛形となる「ガントチャート」という名前のシートが必要。
+   *
+   * @param ticketNumber
+   */
   public createNewGuntChart(ticketNumber:string) {
     return SpreadSheetUtil.copySheet('#' + ticketNumber,"ガントチャート");
   }
