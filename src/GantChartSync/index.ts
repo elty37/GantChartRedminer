@@ -34,8 +34,10 @@ function createTaskFromRedmine(chicketNumber:string, createAsNewSheet:boolean) {
         } else {
             sheet = SpreadsheetApp.getActiveSheet();
         }
-
-        setTitle(sheet, resJson.issues[0], redmineConnection.url);
+        const baseTicket = new RedmineTicket();
+        baseTicket.createRedmineTicketFromRequest(resJson.issues[0]);
+        setTitle(sheet, baseTicket, redmineConnection.url);
+        setDate(sheet, baseTicket);
         let ticket: RedmineTicket = new RedmineTicket();
         let currentChildTicket: RedmineTicket = new RedmineTicket();
         let rowNumber = 11;
@@ -66,13 +68,14 @@ function createTaskFromRedmine(chicketNumber:string, createAsNewSheet:boolean) {
 }
 
 /**
+ * 引数を元に、タスク行を生成する
  *
- * @param {string} url
- * @param {Object} sheet
- * @param {number} rowNumber
- * @param {RedmineTicket} redmineTicket
+ * @param {string} url redmineのurl
+ * @param {Sheet} sheet 出力するシート
+ * @param {number} rowNumber 出力する行
+ * @param {RedmineTicket} redmineTicket 出力するタスクに対応するRedmineチケット
  */
-function setValueOfCellFromRequest(url:string, sheet:any, rowNumber:number, redmineTicket:any) {
+function setValueOfCellFromRequest(url:string, sheet:Sheet, rowNumber:number, redmineTicket:RedmineTicket) {
     const redmineReferenceLogic = new RedmineReferenceLogic();
     var chicketUrl = url + "/issues/";
     var hyperLink = redmineReferenceLogic.createHyperLink(chicketUrl, redmineTicket.id);
@@ -82,7 +85,7 @@ function setValueOfCellFromRequest(url:string, sheet:any, rowNumber:number, redm
     sheet.getRange(rowNumber, 5).setValue(redmineTicket.startDate);
     sheet.getRange(rowNumber, 6).setValue(redmineTicket.dueDate);
     sheet.getRange(rowNumber, 7).setValue(redmineTicket.estimatedHours);
-    sheet.getRange(rowNumber, 8).setValue(redmineTicket.doneRatio * 0.01);
+    sheet.getRange(rowNumber, 8).setValue(Number(redmineTicket.doneRatio) * 0.01);
 }
 
 /**
@@ -94,7 +97,7 @@ function setChildStyle(sheet: Sheet, rowNumber: number) {
     const rangeStart="B";
     const rangeEnd="BP";
     const range = sheet.getRange(rangeStart + rowNumber.toString() + ":" + rangeEnd + rowNumber.toString());
-    RangeUtil.setColor(range, "#AAAAAA");
+    RangeUtil.setColor(range, "#cccccc");
 }
 
 /**
@@ -104,11 +107,42 @@ function setChildStyle(sheet: Sheet, rowNumber: number) {
  * @param {RedmineTicket} titleTicket
  * @param {string} url
  */
-function setTitle(sheet:any, titleTicket:any, url:string) {
+function setTitle(sheet:any, titleTicket:RedmineTicket, url:string) {
     let ticketUrl = url + "/issues/";
     const logic = new RedmineReferenceLogic();
     let hyperLink = logic.createHyperLink(ticketUrl, titleTicket.id, titleTicket.subject);
     sheet.getRange(2, 2).setFormula(hyperLink);
+}
+
+/**
+ * ガントチャート上の日付セルを設定
+ *
+ * @param {Object} sheet
+ * @param {RedmineTicket} titleTicket
+ */
+function setDate(sheet:any, titleTicket:RedmineTicket) {
+    const startDate = new Date(titleTicket.startDate);
+    const endDate = new Date(titleTicket.dueDate);
+    let day = startDate.getDate();
+    let month = startDate.getMonth() + 1;
+    let dayOfWeek = startDate.getDay() - 1;	// 曜日(数値)
+    let cellOfWeekDay = 0;
+    const termDay = (+(endDate) - +(startDate)) / 86400000;
+    for (let i = 0; i <= termDay; i++) {
+        dayOfWeek++;
+        day = startDate.getDate();
+        startDate.setDate(startDate.getDate() + 1);
+        if (dayOfWeek % 7 < 1 || dayOfWeek % 7 > 5) {
+            continue;
+        }
+        if (startDate.getMonth() === month) {
+            month = startDate.getMonth() + 1;
+        }
+        sheet.getRange(8, 9 + cellOfWeekDay).setValue(month);
+        sheet.getRange(9, 9 + cellOfWeekDay).setValue(day);
+        sheet.getRange(10, 9 + cellOfWeekDay).setValue([ "日", "月", "火", "水", "木", "金", "土" ][dayOfWeek % 7]);
+        cellOfWeekDay++;
+    }
 }
 
 /**
