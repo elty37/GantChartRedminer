@@ -57,13 +57,13 @@ function createTaskFromRedmine(ticketNumber:string, createAsNewSheet:boolean) {
             rowNumber++;
             Logger.log("[debug]" + JSON.stringify(currentChildrenIssues));
             for (let j = 0; j < currentChildrenIssues.length; j++) {
-              if (currentChildrenIssues[j].parent.id === ticket.id) {
-                  currentChildTicket.createRedmineTicketFromRequest(currentChildrenIssues[j]);
-                  Logger.log(JSON.stringify(currentChildTicket));
-                  setValueOfCellFromRequest(redmineConnection.url, sheet, rowNumber, currentChildTicket);
-                  rowNumber++;
-                  currentChildTicket = new RedmineTicket();
-              }
+                if (currentChildrenIssues[j].parent.id === ticket.id) {
+                    currentChildTicket.createRedmineTicketFromRequest(currentChildrenIssues[j]);
+                    Logger.log(JSON.stringify(currentChildTicket));
+                    setValueOfCellFromRequest(redmineConnection.url, sheet, rowNumber, currentChildTicket);
+                    rowNumber++;
+                    currentChildTicket = new RedmineTicket();
+                }
             }
             ticket = new RedmineTicket();
             currentChildTicket = new RedmineTicket();
@@ -116,20 +116,6 @@ function setChildStyle(sheet: Sheet, rowNumber: number) {
 }
 
 /**
- * ガントチャート上のタスクごとにチケットのタイトル表示
- *
- * @param {Object} sheet
- * @param {RedmineTicket} titleTicket
- * @param {string} url
- */
-function setTitle(sheet:any, titleTicket:RedmineTicket, url:string) {
-    let ticketUrl = url + "/issues/";
-    const logic = new RedmineReferenceLogic();
-    let hyperLink = logic.createHyperLink(ticketUrl, titleTicket.id, titleTicket.subject);
-    sheet.getRange(2, 2).setFormula(hyperLink);
-}
-
-/**
  * ガントチャート上の日付セルを設定
  *
  * @param {Object} sheet
@@ -161,21 +147,31 @@ function setDate(sheet:any, titleTicket:RedmineTicket) {
 }
 
 /**
- * ルートチケット指定
+ * ガントチャート上のタスクごとにチケットのタイトル表示
+ *
+ * @param {Object} sheet
+ * @param {RedmineTicket} titleTicket
+ * @param {string} url
  */
-function getRootTicket() {
-    //入力するメッセージボックス
-    var chicketNumber = Browser.inputBox("ルートチケット番号の入力", "表示したいチケット番号を入力してください。", Browser.Buttons.OK_CANCEL);
-    if (chicketNumber != "cancel"){
-        createTaskFromRedmine(chicketNumber, true);
+function setTitle(sheet:any, titleTicket:RedmineTicket, url:string) {
+    let ticketUrl = url + "/issues/";
+    const logic = new RedmineReferenceLogic();
+    let hyperLink = logic.createHyperLink(ticketUrl, titleTicket.id, titleTicket.subject);
+    sheet.getRange(2, 2).setFormula(hyperLink);
+}
+
+function frontController() {
+    const actionId = PropertiesService.getScriptProperties().getProperty("action");
+    switch (actionId) {
+        case "1":
+            const ticketNumber = PropertiesService.getScriptProperties().getProperty("ticketNumber");
+            createTaskFromRedmine(ticketNumber, true);
+            break;
+        case "2":
+            break;
+        default:
+            Logger.log("invalid actionId -" + actionId);
     }
 }
 
-function showMenu() {
-    let html = HtmlService.createHtmlOutputFromFile("GantChartSync_Menu");
-    SpreadsheetApp.getUi().showModalDialog(html, "redmine同期");
-}
-
-// getRootTicket();
-
-showMenu();
+frontController();

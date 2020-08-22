@@ -11,7 +11,7 @@ CTMはclaspで複数のツールを開発する際、各ツールごとを独立
 
 上図の場合の`app.json`
 ```json
-{"Tool_a":"./src/tool_a/index.ts","Tool_b":"./src/tool_b/index.ts"}
+{"Tool_a":"./src/tool_a/index.js","Tool_b":"./src/tool_b/index.js"}
 ```
 `app.json`は`"ツール名":"エントリポイント"`の形で保存されます。ビルド先は`build/{ツール名}.bundle.js`となります。
 

@@ -29,8 +29,6 @@
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
-        -webkit-transition: all 0.3s;
-        transition: all 0.3s;
         text-align: center;
         vertical-align: middle;
         text-decoration: none;
@@ -43,10 +41,6 @@
         border: 2px solid #000;
         border-radius: 0;
         background: #fff;
-
-        -webkit-transform-style: preserve-3d;
-
-        transform-style: preserve-3d;
     }
 
     a.btn-border:before {
@@ -58,8 +52,6 @@
         height: 100%;
 
         content: '';
-        -webkit-transition: all .3s;
-        transition: all .3s;
 
         background: #9FD9F6;
     }
@@ -72,36 +64,136 @@
     a.btn-border:hover:before {
         background: #fff;
     }
+    .next-area {
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+    .next-area.is-active {
+        opacity: 1;
+    }
+    .hide {
+        display: none;
+    }
+    .cp_iptxt {
+        position: relative;
+    }
+    .cp_iptxt input[type='text'] {
+        font: 15px/24px sans-serif;
+        box-sizing: border-box;
+        width: 100%;
+        padding: 0.3em;
+        letter-spacing: 1px;
+        border: 0;
+        margin-top: 25px;
+    }
+    .cp_iptxt input[type='text']:focus {
+        outline: none;
+    }
+    .cp_iptxt input[type='text']:focus::after {
+        outline: none;
+    }
+    .cp_iptxt::after {
+        display: block;
+        width: 100%;
+        height: 4px;
+        margin-top: -1px;
+        content: '';
+        border-width: 0 1px 1px 1px;
+        border-style: solid;
+        border-color: #9FD9F6;
+    }
+    .btn-flat-border {
+        display: inline-block;
+        padding: 0.3em 1em;
+        text-decoration: none;
+        color: #67c5ff;
+        border: solid 2px #9FD9F6;
+        border-radius: 3px;
+        transition: .4s;
+        font-size: large;
+        margin-top: 5px;
+    }
+
+    .btn-flat-border:hover {
+        background: #67c5ff;
+        color: white;
+    }
+
+    label.subtitle {
+        font-size: x-large;
+        color: gray;
+        border-width: 0px 0px 0px 10px;
+        border-color: #9FD9F6;
+        border-style: solid;
+        padding-left: 3px;
+        margin-left: -10px;
+    }
 </style>
 <body>
-<div id="btn-area">
+<div id="btn-area" class="next-area is-active">
     <a id="menu-btn-update-redmine" class="btn btn-border">ガントチャートの内容でRedmineを更新する</a>
-    <a id="menu-btn-update-gantchart" class="btn btn-border">Redmineの内容でチケットを更新する</a>
+    <a id="menu-btn-update-gantchart" class="btn btn-border">Redmineの内容でガントチャートを更新する</a>
 </div>
-<div id="update-redmine-area">
+<div class="next-area" id="update-redmine-area">
+    作成中
 </div>
-<div id="update-gantchart-area">
+<div class="next-area" id="update-gantchart-area">
+    <label  for="ticket-number" class="subtitle">Redmineの内容でガントチャートを更新する</label>
+    <div class="cp_iptxt">
+        <input id="ticket-number" type="text" placeholder="表示したいチケット番号を入力してください。(#不要)" />
+    </div>
+    <a id="btn-update-gantchart" class="btn-flat-border" type="button">実行</a>
 </div>
 <script type="text/javascript">
-    google.script.run
-        .withSuccessHandler(test)
-        .backTest();
-    const test = function() {
-
-    }
+    // google.script.run
+    //     .withSuccessHandler(test)
+    //     .receiveTicketNumber();
     (function(){
-        let redmineButton = document.getElementById("menu-btn-update-redmine");
-        let gantChartButton = document.getElementById("menu-btn-update-gantchart");
+        const redmineButton = document.getElementById("menu-btn-update-redmine");
+        const gantChartButton = document.getElementById("menu-btn-update-gantchart");
+        const updateGantChartButton = document.getElementById("btn-update-gantchart");
+
+        const transitionMethod = function(id) {
+            const updateRedmineArea = document.getElementById(id);
+            updateRedmineArea.setAttribute("class", "next-area is-active");
+        };
 
         redmineButton.onclick = function() {
-            alert("redmine button");
-
+            const btnArea = document.getElementById("btn-area");
+            const updateRedmineArea = document.getElementById('update-redmine-area');
+            const hideArea = document.getElementById('update-gantchart-area');
+            btnArea.addEventListener('transitionend', function () {
+                btnArea.style.display="none";
+                updateRedmineArea.setAttribute("class", "next-area is-active");
+                hideArea.setAttribute("class", "hide");
+            });
+            btnArea.setAttribute("class", "next-area");
         };
 
         gantChartButton.onclick = function() {
-            alert("gant chart button");
+            const btnArea = document.getElementById("btn-area");
+            const updateRedmineArea = document.getElementById('update-gantchart-area');
+            const hideArea = document.getElementById('update-redmine-area');
+            btnArea.addEventListener('transitionend', function () {
+                btnArea.style.display="none";
+                updateRedmineArea.setAttribute("class", "next-area is-active");
+                hideArea.setAttribute("class", "hide");
+            });
+            btnArea.setAttribute("class", "next-area");
         };
-    })();
+
+        updateGantChartButton.onclick = function() {
+            const successUpdateGantChart = function(){
+                alert("正常に更新されました。");
+            };
+            const ticketNumber = document.getElementById("ticket-number").value;
+            alert(ticketNumber);
+            google.script.run
+                .withSuccessHandler(successUpdateGantChart())
+                .receiveTicketNumber(ticketNumber);
+        };
+
+        })();
 </script>
 </body>
 </html>
