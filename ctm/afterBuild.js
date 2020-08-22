@@ -50,7 +50,7 @@ function convertScriptToGasExecutableFormat() {
 function copyResourceFiles() {
   let list = JSON.parse(fs.readFileSync("./ctm/resources/build.json", "utf8"));
   let currentKey = [];
-  const dist = "./build";
+  const dist = "./build/";
   let src = "";
   let fileList = [];
   let toolNameList = Object.keys(list);
@@ -60,7 +60,7 @@ function copyResourceFiles() {
     src = "./src/" + currentKey + "/resources/";
     fileList = fs.readdirSync(src);
     for (let j = 0; j < fileList.length; j++) {
-      fs.copyFileSync(src + fileList[j], dest + currentKey + "_" + fileList[j]);
+      fs.copyFileSync(src + fileList[j], dist + currentKey + "_" + fileList[j]);
     }
   }
 }

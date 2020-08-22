@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<style>
+    /*まずはお決まりのボックスサイズ算出をborer-boxに */
+    *,
+    *:before,
+    *:after {
+        -webkit-box-sizing: inherit;
+        box-sizing: inherit;
+    }
+
+    html {
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        font-size: 62.5%;/*rem算出をしやすくするために*/
+    }
+
+    .btn,
+    a.btn,
+    button.btn {
+        font-size: 1.6rem;
+        font-weight: 700;
+        line-height: 1.5;
+        position: relative;
+        display: inline-block;
+        padding: 1rem 4rem;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        -webkit-transition: all 0.3s;
+        transition: all 0.3s;
+        text-align: center;
+        vertical-align: middle;
+        text-decoration: none;
+        letter-spacing: 0.1em;
+        color: #212529;
+        border-radius: 0.5rem;
+    }
+
+    a.btn-border {
+        border: 2px solid #000;
+        border-radius: 0;
+        background: #fff;
+
+        -webkit-transform-style: preserve-3d;
+
+        transform-style: preserve-3d;
+    }
+
+    a.btn-border:before {
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        width: 5px;
+        height: 100%;
+
+        content: '';
+        -webkit-transition: all .3s;
+        transition: all .3s;
+
+        background: #9FD9F6;
+    }
+
+    a.btn-border:hover {
+        color: #fff;
+        background: #9FD9F6;
+    }
+
+    a.btn-border:hover:before {
+        background: #fff;
+    }
+</style>
+<body>
+<div id="btn-area">
+    <a id="menu-btn-update-redmine" class="btn btn-border">ガントチャートの内容でRedmineを更新する</a>
+    <a id="menu-btn-update-gantchart" class="btn btn-border">Redmineの内容でチケットを更新する</a>
+</div>
+<div id="update-redmine-area">
+</div>
+<div id="update-gantchart-area">
+</div>
+<script type="text/javascript">
+
+    (function(){
+        let redmineButton = document.getElementById("menu-btn-update-redmine");
+        let gantChartButton = document.getElementById("menu-btn-update-gantchart");
+
+        redmineButton.onclick = function() {
+            alert("redmine button");
+                google.script.run
+    .withSuccessHandler(function(data) {
+        alert(data);
+    })
+    .withFailureHandler(function(data){
+    alert(data)
+    })
+    .backTest();
+
+        };
+
+        gantChartButton.onclick = function() {
+            alert("gant chart button");
+        };
+    })();
+</script>
+</body>
+</html>

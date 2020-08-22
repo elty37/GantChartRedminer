@@ -7,15 +7,22 @@ import {RangeUtil} from "./Util/RangeUtil";
 /**
  * redmineからチケット情報を取得し、プロジェクトのタスクに記載
  *
- * @param {string} chicketNumber
+ * @param {string} ticketNumber
  * @param {boolean} createAsNewSheet
  */
-function createTaskFromRedmine(chicketNumber:string, createAsNewSheet:boolean) {
-    //ルートチケットの取得
+function createTaskFromRedmine(ticketNumber:string, createAsNewSheet:boolean) {
     const redmineReferenceLogic = new RedmineReferenceLogic();
-    let resJson = redmineReferenceLogic.getMainTicketInfo(parseInt(chicketNumber));
+    let sheet;
+    if (createAsNewSheet) {
+        sheet = redmineReferenceLogic.createNewGuntChart(ticketNumber);
+    } else {
+        sheet = SpreadsheetApp.getActiveSheet();
+    }
+
+    //ルートチケットの取得
+    let resJson = redmineReferenceLogic.getMainTicketInfo(parseInt(ticketNumber));
     //子チケットの取得
-    let childrenJson = redmineReferenceLogic.getChildrenTicketInfo(parseInt(chicketNumber));
+    let childrenJson = redmineReferenceLogic.getChildrenTicketInfo(parseInt(ticketNumber));
     if (childrenJson.length < 1) {
         Browser.msgBox("子チケットがありませんでした。");
     }
@@ -23,24 +30,24 @@ function createTaskFromRedmine(chicketNumber:string, createAsNewSheet:boolean) {
     let grandchildrenJson = redmineReferenceLogic.getGrandchildrenTicketInfoFromChildrenId(childrenJson);
     if (grandchildrenJson.length < 1) {
         Browser.msgBox("孫チケットがありませんでした。");
+        return;
     }
     try {
         let currentIssue = null;
         let currentChildrenIssues = [];
-        let sheet = SpreadsheetApp.getActiveSheet();
         const redmineConnection = new RedmineConnection();
-        if (createAsNewSheet) {
-            sheet = redmineReferenceLogic.createNewGuntChart(chicketNumber);
-        } else {
-            sheet = SpreadsheetApp.getActiveSheet();
-        }
         const baseTicket = new RedmineTicket();
         baseTicket.createRedmineTicketFromRequest(resJson.issues[0]);
+
         setTitle(sheet, baseTicket, redmineConnection.url);
         setDate(sheet, baseTicket);
         let ticket: RedmineTicket = new RedmineTicket();
         let currentChildTicket: RedmineTicket = new RedmineTicket();
         let rowNumber = 11;
+        if (!("issues" in childrenJson)) {
+            Browser.msgBox("孫チケットがありませんでした。");
+            return;
+        }
         for (let i = 0; i < childrenJson.issues.length; i++) {
             currentIssue = childrenJson.issues[i];
             currentChildrenIssues = grandchildrenJson[i].issues;
@@ -66,6 +73,14 @@ function createTaskFromRedmine(chicketNumber:string, createAsNewSheet:boolean) {
         Browser.msgBox("エラー：" + e);
     }
 }
+
+/**
+ * ガントチャート情報を元にチケットを更新する
+ */
+function updateTicketFromGantChart() {
+
+}
+
 
 /**
  * 引数を元に、タスク行を生成する
@@ -156,4 +171,11 @@ function getRootTicket() {
     }
 }
 
-getRootTicket();
+function showMenu() {
+    let html = HtmlService.createHtmlOutputFromFile("GantChartSync_Menu");
+    SpreadsheetApp.getUi().showModalDialog(html, "redmine同期");
+}
+
+// getRootTicket();
+
+showMenu();

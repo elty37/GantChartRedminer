@@ -4,6 +4,7 @@ import {SpreadSheetUtil} from "../Util/SpreadSheetUtil";
 import {TicketDao} from "../Dao/TicketDao";
 import {SuperLogic} from "./SuperLogic";
 import {Messages} from "../Config/lang/ja";
+import {RedmineTicket} from "../Entity/RedmineTicket";
 
 export class RedmineReferenceLogic extends SuperLogic {
 
@@ -25,7 +26,7 @@ export class RedmineReferenceLogic extends SuperLogic {
    */
   public getChildrenTicketInfo(parentNumber: number) {
     const ticketDao = new TicketDao();
-    return ticketDao.getChildren(parentNumber);
+    return ticketDao.getChildren(parentNumber, "due_date");
   }
 
   /**
@@ -39,8 +40,8 @@ export class RedmineReferenceLogic extends SuperLogic {
     }
     const ticketDao = new TicketDao();
     const res = [];
-    for (var i = 0; i < childrenJson.issues.length; i++){
-      res.push(ticketDao.getChildren(parseInt(childrenJson.issues[i].id)));
+    for (let i = 0; i < childrenJson.issues.length; i++) {
+      res.push(ticketDao.getChildren(parseInt(childrenJson.issues[i].id), "due_date"));
       Utilities.sleep(100);
     }
     return res;
